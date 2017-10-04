@@ -5,9 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
+var methodOverride = require('method-override');
 
-var db = require('./models/db');
-var user_model = require('./models/user');
+var databaseConfig = require('./config/database');
+var userModel = require('./models/user');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -30,6 +31,14 @@ app.use(sassMiddleware({
   sourceMap: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(methodOverride(function(req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    var method = req.body._method
+    delete req.body._method
+    return method
+  }
+}));
 
 app.use('/', index);
 app.use('/users', users);

@@ -1,12 +1,13 @@
 var express = require('express');
 var router = express.Router();
-var mongoose = require('mongoose');
+
+var User = require('../models/user');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  mongoose.model('User').find({}, function(err, users) {
+  User.find({}, function(err, users) {
     if (err) {
-      return console.err(err);
+      next(err);
     }
     else {
       res.send(users);
