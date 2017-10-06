@@ -6,14 +6,24 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sassMiddleware = require('node-sass-middleware');
 var methodOverride = require('method-override');
+var session = require('express-session');
+var dotenv = require('dotenv');
+
+dotenv.config();
+
+var shopSession = require('./middlewares/shop_session');
+
+var shopifyConfig = require('./config/shopify');
 
 var databaseConfig = require('./config/database');
-var userModel = require('./models/user');
+var shopModel = require('./models/shop');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
+var shopifyAuth = require('./routes/shopify_auth');
 
 var app = express();
+
+app.locals.env = process.env;
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -24,6 +34,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({secret: 'tung teng'}));
 app.use(sassMiddleware({
   src: path.join(__dirname, 'public'),
   dest: path.join(__dirname, 'public'),
@@ -39,9 +50,10 @@ app.use(methodOverride(function(req, res) {
     return method
   }
 }));
+app.use(shopSession);
 
 app.use('/', index);
-app.use('/users', users);
+app.use('/auth/shopify', shopifyAuth);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

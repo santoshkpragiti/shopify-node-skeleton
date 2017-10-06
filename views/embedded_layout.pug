@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='https://cdn.shopify.com/s/assets/external/app.js')
+  body
+    script.
+      ShopifyApp.init({
+        apiKey: '#{env.API_KEY}',
+        shopOrigin: '#{shop_url}',
+        debug: true,
+        forceRedirect: true
+      });
+      ShopifyApp.ready(function() {
+        ShopifyApp.Bar.loadingOff();
+      });
+    block content
